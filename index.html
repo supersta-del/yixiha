@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>彩色灯光模拟</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #222;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .title {
+            color: #fff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .lamp-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .lamp {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            box-shadow: 0 0 20px 10px currentColor;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .stop-btn {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">彩色灯光模拟器</h1>
+    
+    <div class="lamp-container">
+        <div class="lamp" id="lamp1"></div>
+        <div class="lamp" id="lamp2"></div>
+        <div class="lamp" id="lamp3"></div>
+        <div class="lamp" id="lamp4"></div>
+        <div class="lamp" id="lamp5"></div>
+        <div class="lamp" id="lamp6"></div>
+        <div class="lamp" id="lamp7"></div>
+    </div>
+    
+    <div class="controls">
+        <button id="startBtn">启动</button>
+        <button id="stopBtn" class="stop-btn">停止</button>
+    </div>
+    
+    <script>
+        const colors = [
+            '#FF0000', // 红
+            '#FF7F00', // 橙
+            '#FFFF00', // 黄
+            '#00FF00', // 绿
+            '#0000FF', // 蓝
+            '#4B0082', // 靛
+            '#9400D3'  // 紫
+        ];
+        
+        let animationInterval;
+        let isRunning = false;
+        const lamps = Array.from({length: 7}, (_, i) => document.getElementById(`lamp${i+1}`));
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        
+        function getRandomColors() {
+            // 创建一个颜色数组的副本
+            let availableColors = [...colors];
+            let result = [];
+            
+            // 随机选择7个不重复的颜色
+            for (let i = 0; i < 7; i++) {
+                const randomIndex = Math.floor(Math.random() * availableColors.length);
+                result.push(availableColors[randomIndex]);
+                availableColors.splice(randomIndex, 1);
+            }
+            
+            return result;
+        }
+        
+        function updateLamps() {
+            const randomColors = getRandomColors();
+            
+            lamps.forEach((lamp, index) => {
+                lamp.style.color = randomColors[index];
+                lamp.style.opacity = '0.3';
+                
+                // 添加闪烁效果
+                setTimeout(() => {
+                    lamp.style.opacity = '0.9';
+                    lamp.style.transform = 'scale(1.1)';
+                    
+                    setTimeout(() => {
+                        lamp.style.transform = 'scale(1)';
+                    }, 200);
+                }, Math.random() * 300);
+            });
+        }
+        
+        function startAnimation() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            updateLamps();
+            animationInterval = setInterval(updateLamps, 1000);
+        }
+        
+        function stopAnimation() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            clearInterval(animationInterval);
+            
+            // 将所有灯设置为灰色
+            lamps.forEach(lamp => {
+                lamp.style.color = '#555';
+                lamp.style.opacity = '0.5';
+                lamp.style.transform = 'scale(1)';
+            });
+        }
+        
+        startBtn.addEventListener('click', startAnimation);
+        stopBtn.addEventListener('click', stopAnimation);
+        
+        // 初始状态
+        stopAnimation();
+    </script>
+</body>
+</html>
